@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces.Implementations
 {
-    internal class Reset : IShapeCommand
+    internal class DrawRectangle
     {
-        public void Execute(Canvas canvas, string[] arguments)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

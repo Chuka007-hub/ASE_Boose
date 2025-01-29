@@ -34,9 +34,9 @@
             button4 = new Button();
             button5 = new Button();
             richTextBox1 = new RichTextBox();
-            pictureBox1 = new PictureBox();
-            textBox1 = new TextBox();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            pictureBox = new PictureBox();
+            singleLineCommandBox = new TextBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             SuspendLayout();
             // 
             // button1
@@ -66,6 +66,7 @@
             button3.TabIndex = 2;
             button3.Text = "button3";
             button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
             // 
             // button4
             // 
@@ -93,29 +94,31 @@
             richTextBox1.TabIndex = 5;
             richTextBox1.Text = "";
             // 
-            // pictureBox1
+            // pictureBox
             // 
-            pictureBox1.BackColor = SystemColors.ControlDarkDark;
-            pictureBox1.Location = new Point(299, 3);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(665, 514);
-            pictureBox1.TabIndex = 6;
-            pictureBox1.TabStop = false;
+            pictureBox.BackColor = SystemColors.ControlDarkDark;
+            pictureBox.Location = new Point(299, 3);
+            pictureBox.Name = "pictureBox";
+            pictureBox.Size = new Size(665, 514);
+            pictureBox.TabIndex = 6;
+            pictureBox.TabStop = false;
             // 
-            // textBox1
+            // singleLineCommandBox
             // 
-            textBox1.Location = new Point(1, 284);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(210, 23);
-            textBox1.TabIndex = 7;
+            singleLineCommandBox.BorderStyle = BorderStyle.FixedSingle;
+            singleLineCommandBox.Location = new Point(2, 284);
+            singleLineCommandBox.Name = "singleLineCommandBox";
+            singleLineCommandBox.Size = new Size(210, 23);
+            singleLineCommandBox.TabIndex = 7;
+            singleLineCommandBox.TextChanged += textBox1_TextChanged;
             // 
             // Canvas
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(966, 520);
-            Controls.Add(textBox1);
-            Controls.Add(pictureBox1);
+            Controls.Add(singleLineCommandBox);
+            Controls.Add(pictureBox);
             Controls.Add(richTextBox1);
             Controls.Add(button5);
             Controls.Add(button4);
@@ -125,7 +128,7 @@
             Name = "Canvas";
             Text = "ASE_Boose";
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -138,7 +141,7 @@
         private Button button4;
         private Button button5;
         private RichTextBox richTextBox1;
-        private PictureBox pictureBox1;
-        private TextBox textBox1;
+        private PictureBox pictureBox;
+        private TextBox singleLineCommandBox;
     }
 }

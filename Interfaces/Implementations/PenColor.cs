@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces.Implementations
 {
-    internal class PenColor
+    internal class PenColor : IShapeCommand
     {
+        public void Execute(Canvas canvas, string[] arguments)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

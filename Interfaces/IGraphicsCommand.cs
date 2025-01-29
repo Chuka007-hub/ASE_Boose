@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces
 {
-    public interface IShapeCommand
+    internal interface IGraphicsCommand
     {
-        void Execute(Canvas canvas, string[] arguments);
+        void Execute(Graphics graphics, string[] arguments, ICanvas canvas);
     }
 }
