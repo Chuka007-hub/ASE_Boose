@@ -25,7 +25,9 @@ namespace Ase_Boose.Interfaces
             { "drawto", new DrawTo() },
             { "reset", new Reset() },
             { "clear", new ClearScreen() },
-            { "pen", new PenColor() }
+            { "pen", new PenColor() },
+            { "fill", new fillColor() },
+
         };
 
 
