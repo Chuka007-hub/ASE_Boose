@@ -31,9 +31,9 @@ namespace Ase_Boose.Interfaces
 
         private readonly Dictionary<string, IGraphicsCommand> graphicsCommands = new()
         {
-           // { "rectangle", new DrawRectangle() },
+            { "rectangle", new DrawRectangle() },
             { "circle", new DrawCircle() },
-            //{ "triangle", new DrawTriangle() }
+            { "triangle", new DrawTriangle() }
         };
 
 

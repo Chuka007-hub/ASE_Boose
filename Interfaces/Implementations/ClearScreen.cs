@@ -8,9 +8,23 @@ namespace Ase_Boose.Interfaces.Implementations
 {
     internal class ClearScreen : IShapeCommand
     {
-        public void Execute(Canvas canvas, string[] arguments)
+        public void Execute(Canvas canvas, string[] args)
         {
-            throw new NotImplementedException();
+            if (canvas == null) return;
+
+            canvas.DrawingPictureBox.Invoke((MethodInvoker)delegate
+            {
+                using (Graphics g = canvas.DrawingPictureBox.CreateGraphics())
+                {
+                    g.Clear(canvas.DrawingPictureBox.BackColor);
+                }
+                canvas.DrawingPictureBox.Invalidate(); 
+            });
+
+            canvas.CommandTextBox.Invoke((MethodInvoker)delegate
+            {
+                canvas.CommandTextBox.Clear();
+            });
         }
     }
 }
