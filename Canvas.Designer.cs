@@ -28,66 +28,75 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
+            ResetButton = new Button();
             button2 = new Button();
-            button3 = new Button();
+            RunButton = new Button();
             button4 = new Button();
-            button5 = new Button();
+            ClearButton = new Button();
             richTextBox1 = new RichTextBox();
             pictureBox = new PictureBox();
             singleLineCommandBox = new TextBox();
+            checkBox1 = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox).BeginInit();
             SuspendLayout();
             // 
-            // button1
+            // ResetButton
             // 
-            button1.Location = new Point(197, 437);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 0;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            ResetButton.BackColor = Color.Red;
+            ResetButton.ForeColor = SystemColors.ControlLightLight;
+            ResetButton.Location = new Point(182, 455);
+            ResetButton.Name = "ResetButton";
+            ResetButton.Size = new Size(89, 32);
+            ResetButton.TabIndex = 0;
+            ResetButton.Text = "Reset";
+            ResetButton.UseVisualStyleBackColor = false;
+            ResetButton.Click += button1_Click;
             // 
             // button2
             // 
-            button2.Location = new Point(12, 375);
+            button2.Location = new Point(12, 368);
             button2.Name = "button2";
-            button2.Size = new Size(75, 23);
+            button2.Size = new Size(89, 32);
             button2.TabIndex = 1;
             button2.Text = "button2";
             button2.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // RunButton
             // 
-            button3.Location = new Point(218, 284);
-            button3.Name = "button3";
-            button3.Size = new Size(75, 23);
-            button3.TabIndex = 2;
-            button3.Text = "button3";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click;
+            RunButton.BackColor = Color.Lime;
+            RunButton.Location = new Point(218, 284);
+            RunButton.Name = "RunButton";
+            RunButton.Size = new Size(75, 23);
+            RunButton.TabIndex = 2;
+            RunButton.Text = "Run";
+            RunButton.UseVisualStyleBackColor = false;
+            RunButton.Click += button3_Click;
             // 
             // button4
             // 
-            button4.Location = new Point(182, 375);
+            button4.ForeColor = SystemColors.ControlText;
+            button4.Location = new Point(182, 368);
             button4.Name = "button4";
-            button4.Size = new Size(75, 23);
+            button4.Size = new Size(89, 32);
             button4.TabIndex = 3;
             button4.Text = "button4";
             button4.UseVisualStyleBackColor = true;
             // 
-            // button5
+            // ClearButton
             // 
-            button5.Location = new Point(116, 437);
-            button5.Name = "button5";
-            button5.Size = new Size(75, 23);
-            button5.TabIndex = 4;
-            button5.Text = "button5";
-            button5.UseVisualStyleBackColor = true;
+            ClearButton.BackColor = SystemColors.WindowFrame;
+            ClearButton.ForeColor = SystemColors.ButtonHighlight;
+            ClearButton.Location = new Point(12, 455);
+            ClearButton.Name = "ClearButton";
+            ClearButton.Size = new Size(89, 32);
+            ClearButton.TabIndex = 4;
+            ClearButton.Text = "Clear";
+            ClearButton.UseVisualStyleBackColor = false;
+            ClearButton.Click += ClearButton_Click;
             // 
             // richTextBox1
             // 
+            richTextBox1.BackColor = SystemColors.Info;
             richTextBox1.Location = new Point(1, 3);
             richTextBox1.Name = "richTextBox1";
             richTextBox1.Size = new Size(292, 265);
@@ -96,7 +105,7 @@
             // 
             // pictureBox
             // 
-            pictureBox.BackColor = SystemColors.ControlDarkDark;
+            pictureBox.BackColor = SystemColors.ControlLightLight;
             pictureBox.Location = new Point(299, 3);
             pictureBox.Name = "pictureBox";
             pictureBox.Size = new Size(665, 514);
@@ -112,19 +121,31 @@
             singleLineCommandBox.TabIndex = 7;
             singleLineCommandBox.TextChanged += textBox1_TextChanged;
             // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.Location = new Point(17, 320);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(73, 19);
+            checkBox1.TabIndex = 8;
+            checkBox1.Text = "Fill Color";
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            // 
             // Canvas
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(966, 520);
+            Controls.Add(checkBox1);
             Controls.Add(singleLineCommandBox);
             Controls.Add(pictureBox);
             Controls.Add(richTextBox1);
-            Controls.Add(button5);
+            Controls.Add(ClearButton);
             Controls.Add(button4);
-            Controls.Add(button3);
+            Controls.Add(RunButton);
             Controls.Add(button2);
-            Controls.Add(button1);
+            Controls.Add(ResetButton);
             Name = "Canvas";
             Text = "ASE_Boose";
             Load += Form1_Load;
@@ -135,13 +156,14 @@
 
         #endregion
 
-        private Button button1;
+        private Button ResetButton;
         private Button button2;
-        private Button button3;
+        private Button RunButton;
         private Button button4;
-        private Button button5;
+        private Button ClearButton;
         private RichTextBox richTextBox1;
         private PictureBox pictureBox;
         private TextBox singleLineCommandBox;
+        private CheckBox checkBox1;
     }
 }

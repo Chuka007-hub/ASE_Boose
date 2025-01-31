@@ -43,6 +43,19 @@ namespace Ase_Boose
             shapemaker.ExecuteDrawing(parser);
         }
 
+        private void ClearButton_Click(object sender, EventArgs e)
+        {
+            string command = "clear";
+            CommandParser parser = new CommandParser(command);
+            shapemaker.ExecuteDrawing(parser);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            this.IsFilling = checkBox1.Checked;
+
+        }
+
         public PictureBox DrawingPictureBox
         {
             get { return pictureBox; }
@@ -70,8 +83,8 @@ namespace Ase_Boose
             get { return PenColor; }
             set { PenColor = value; }
         }
-      
-        
+
+
         public Color FillColor
         {
             get { return fillColor; }
