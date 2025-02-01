@@ -8,10 +8,12 @@ namespace Ase_Boose
     public partial class Canvas : Form, ICanvas
     {
         private bool isFill = false;
-        private Point Position = new Point(330, 250);
+        private Point Position = new Point(320, 190);
         private Pen PenColor = new Pen(Color.Black);
         private Color fillColor = Color.Black;
         public Shapemaker shapemaker;
+        public MultipleLineCommand multiLineCommands;
+
 
 
         public Canvas()
@@ -19,6 +21,7 @@ namespace Ase_Boose
             InitializeComponent();
             CommandParser command = new CommandParser("");
             shapemaker = new Shapemaker(this);
+            multiLineCommands = new MultipleLineCommand(this);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -28,7 +31,9 @@ namespace Ase_Boose
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            string command = "reset";
+            CommandParser parser = new CommandParser(command);
+            shapemaker.ExecuteDrawing(parser);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -54,6 +59,72 @@ namespace Ase_Boose
         {
             this.IsFilling = checkBox1.Checked;
 
+        }
+
+        private void pictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            Point mousePosition = e.Location;
+            this.Text = $"Mouse Position: {mousePosition.X}, {mousePosition.Y}";
+        }
+
+        private void pictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            int point = 5;
+            int x = Position.X - point / 2;
+            int y = Position.Y - point / 2;
+            e.Graphics.FillEllipse(Brushes.Black, x, y, point, point);
+        }
+
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            string scriptContent = richTextBox.Text;
+            await Task.Run(() => multiLineCommands.ExecuteCommands(scriptContent));
+
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void HintButton_Click(object sender, EventArgs e)
+        {
+            string hintText = "COMMAND GUIDE:\n\n" +
+                         "1. MoveTo x y  - Moves pen to (x, y) without drawing.\n" +
+                         "2. DrawTo x y  - Draws a line to (x, y).\n" +
+                         "3. Reset       - Resets the drawing position.\n" +
+                         "4. Clear       - Clears the canvas.\n" +
+                         "5. Pen color   - Changes pen color (e.g., Pen Red).\n" +
+                         "6. Fill on/off - Enables/disables filling (Fill On/Off).\n" +
+                         "7. Rectangle width height - Draws a rectangle.\n" +
+                         "8. Circle radius - Draws a circle.\n" +
+                         "9. Triangle x1 y1 x2 y2 x3 y3 - Draws a triangle.\n" +
+                         "10. If condition - Starts an if-block.\n" +
+                         "      Example:\n" +
+                         "      If x > 10\n" +
+                         "         DrawTo 50 50\n" +
+                         "      EndIf\n" +
+                         "11. EndIf - Ends an if-block.\n" +
+                         "12. While condition - Starts a while loop.\n" +
+                         "      Example:\n" +
+                         "      While x < 100\n" +
+                         "         DrawTo x 50\n" +
+                         "         x = x + 10\n" +
+                         "      EndWhile\n" +
+                         "13. EndWhile - Ends a while loop.\n";
+
+            pictureBox.Image = GenerateHintImage(hintText);
+        }
+
+        private Image GenerateHintImage(string text)
+        {
+            Bitmap bitmap = new Bitmap(400, 300);
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                g.Clear(Color.White);
+                g.DrawString(text, new Font("Arial", 10), Brushes.Black, new PointF(10, 10));
+            }
+            return bitmap;
         }
 
         public PictureBox DrawingPictureBox
