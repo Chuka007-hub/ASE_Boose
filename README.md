@@ -18,7 +18,7 @@ ASEBoose is a graphical drawing application that allows users to create shapes, 
 ### Steps
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourrepo/ASE_Boose.git
+   git clone https://github.com/Chuka007-hub/ASE_Boose.git
    ```
 2. Open the project in Visual Studio.
 3. Build and run the application.
