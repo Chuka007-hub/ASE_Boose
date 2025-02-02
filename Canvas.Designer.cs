@@ -86,6 +86,7 @@
             ImportScript.TabIndex = 3;
             ImportScript.Text = "Import Script";
             ImportScript.UseVisualStyleBackColor = false;
+            ImportScript.Click += ImportScript_Click;
             // 
             // ClearButton
             // 
@@ -152,6 +153,7 @@
             saveScript.TabIndex = 9;
             saveScript.Text = "Save";
             saveScript.UseVisualStyleBackColor = false;
+            saveScript.Click += saveScript_Click;
             // 
             // HintButton
             // 

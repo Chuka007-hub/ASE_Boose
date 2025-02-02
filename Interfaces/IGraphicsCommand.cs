@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces
 {
-    internal interface IGraphicsCommand
+    public interface IGraphicsCommand
     {
         void Execute(Graphics graphics, string[] arguments, ICanvas canvas);
     }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces
 {
-    public interface IShapeCommand
+    public interface IErrorMessageBox
     {
-        void Execute(ICanvas canvas, string[] arguments);
+        void ShowError(string message);
     }
 }

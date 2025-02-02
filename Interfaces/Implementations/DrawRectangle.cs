@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces.Implementations
 {
-    internal class DrawRectangle : IGraphicsCommand
+    public class DrawRectangle : IGraphicsCommand
     {
+     /// <summary>
+     /// Executes the command to draw a rectangle on the canvas.
+     /// </summary>
+     /// <param name="graphics">The graphics object used for drawing.</param>
+     /// <param name="arguments">An array of arguments containing width and height of the rectangle.</param>
+     /// <param name="canvas">The canvas on which the rectangle will be drawn.</param>
         public void Execute(Graphics graphics, string[] arguments, ICanvas canvas)
         {
             if (arguments.Length == 2 &&
@@ -35,5 +41,6 @@ namespace Ase_Boose.Interfaces.Implementations
                 CommandUtils.ShowError("Invalid command arguments for 'rectangle'. Please provide width and height.");
             }
         }
+
     }
 }

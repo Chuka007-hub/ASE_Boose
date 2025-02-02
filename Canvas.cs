@@ -127,6 +127,52 @@ namespace Ase_Boose
             return bitmap;
         }
 
+        private void ImportScript_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Text files|*.txt|All files|*.*";
+                openFileDialog.Title = "Open Script File";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string fileName = openFileDialog.FileName;
+                    try
+                    {
+                        string scriptContent = File.ReadAllText(fileName);
+                        richTextBox.Text = scriptContent;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error opening the file: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void saveScript_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Filter = "Text files|*.txt|All files|*.*";
+                saveFileDialog.Title = "Save Script File";
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string fileName = saveFileDialog.FileName;
+                    try
+                    {
+                        File.WriteAllText(fileName, richTextBox.Text);
+                        MessageBox.Show("Script saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error saving the file: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
         public PictureBox DrawingPictureBox
         {
             get { return pictureBox; }
@@ -147,9 +193,11 @@ namespace Ase_Boose
         }
 
 
-        public PictureBox PictureBox => throw new NotImplementedException();
+        public PictureBox PictureBox   {
+            get { return pictureBox; }
+        }
 
-        public Pen DrawingPen
+public Pen DrawingPen
         {
             get { return PenColor; }
             set { PenColor = value; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ase_Boose.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +7,22 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces.Implementations
 {
-    internal class fillColor : IShapeCommand
+    
+    /// <summary>
+    /// Represents a command to enable or disable filling for shapes.
+    /// </summary>
+    public class fillColor : IShapeCommand
     {
-        public void Execute(Canvas canvas, string[] argument)
+        /// <summary>
+        /// Executes the fill color command, enabling or disabling shape filling on the canvas.
+        /// </summary>
+        /// <param name="canvas">The canvas on which the fill mode will be applied.</param>
+        /// <param name="argument">An array containing the fill mode argument ('on' or 'off').</param>
+        public void Execute(ICanvas canvas, string[] argument)
         {
             if (argument.Length == 0)
             {
-                MessageBox.Show("Missing argument for 'fill' command. Use 'on' or 'off'.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CommandUtils.ShowError("Missing argument for 'fill' command. Use 'on' or 'off'.");
                 return;
             }
 
@@ -28,11 +38,13 @@ namespace Ase_Boose.Interfaces.Implementations
             }
             else
             {
-                MessageBox.Show("Invalid fill mode. Use 'on' or 'off'.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CommandUtils.ShowError("Invalid fill mode. Use 'on' or 'off'.");
                 return;
             }
 
-             canvas.CommandTextBox.Invoke((MethodInvoker)(() => canvas.CommandTextBox.Clear()));
+            CommandUtils.ClearCommandTextBox(canvas);
         }
     }
+
+
 }

@@ -6,19 +6,24 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces.Implementations
 {
-    internal class ClearScreen : IShapeCommand
+    public class ClearScreen : IShapeCommand
     {
-        public void Execute(Canvas canvas, string[] args)
+        /// <summary>
+        /// Executes the command to clear the canvas and reset the command text box.
+        /// </summary>
+        /// <param name="canvas">The canvas on which the operation is performed.</param>
+        /// <param name="args">The command arguments (not used in this method).</param>
+        public void Execute(ICanvas canvas, string[] args)
         {
             if (canvas == null) return;
 
-            canvas.DrawingPictureBox.Invoke((MethodInvoker)delegate
+            canvas.PictureBox.Invoke((MethodInvoker)delegate
             {
-                using (Graphics g = canvas.DrawingPictureBox.CreateGraphics())
+                using (Graphics g = canvas.PictureBox.CreateGraphics())
                 {
-                    g.Clear(canvas.DrawingPictureBox.BackColor);
+                    g.Clear(canvas.PictureBox.BackColor);
                 }
-                canvas.DrawingPictureBox.Invalidate(); 
+                canvas.PictureBox.Invalidate();
             });
 
             canvas.CommandTextBox.Invoke((MethodInvoker)delegate
@@ -26,5 +31,6 @@ namespace Ase_Boose.Interfaces.Implementations
                 canvas.CommandTextBox.Clear();
             });
         }
+
     }
 }

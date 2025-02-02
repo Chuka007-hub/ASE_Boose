@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose.Interfaces.Implementations
 {
-    internal class DrawTriangle : IGraphicsCommand
+    public class DrawTriangle : IGraphicsCommand
     {
+        /// <summary>
+        /// Executes the command to draw a triangle on the canvas.
+        /// </summary>
+        /// <param name="graphics">The graphics object used for drawing.</param>
+        /// <param name="arguments">An array of arguments containing the base length and height of the triangle.</param>
+        /// <param name="canvas">The canvas on which the triangle will be drawn.</param>
         public void Execute(Graphics graphics, string[] arguments, ICanvas canvas)
         {
             if (arguments.Length == 2 &&
@@ -20,10 +26,10 @@ namespace Ase_Boose.Interfaces.Implementations
 
                 Point[] points =
                 {
-                new Point(x, y),
-                new Point(x + baseLength, y),
-                new Point(x + baseLength / 2, y - height)
-            };
+            new Point(x, y),
+            new Point(x + baseLength, y),
+            new Point(x + baseLength / 2, y - height)
+        };
 
                 if (canvas.IsFilling)
                 {
