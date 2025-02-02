@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Ase_Boose_UnitTest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+217926df967d74b7986a69842d186b52e020a8c5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1030d4f4da090752ab9c9cb9177f09c5dd6c4891")]
 [assembly: System.Reflection.AssemblyProductAttribute("Ase_Boose_UnitTest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Ase_Boose_UnitTest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
