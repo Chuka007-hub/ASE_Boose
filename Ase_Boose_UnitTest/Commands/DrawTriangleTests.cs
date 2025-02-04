@@ -11,9 +11,16 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose_UnitTest.Commands
 {
+    /// <summary>
+    /// Tests for the DrawTriangle command functionality
+    /// </summary>
     [TestFixture]
     public class DrawTriangleTests
     {
+        /// <summary>
+        /// Tests that a triangle is drawn correctly with valid dimensions
+        /// Verifies the triangle's points are correctly positioned based on the given base and height.
+        /// </summary>
         [Test]
         public void Execute_WithValidDimensions_DrawsTriangle()
         {
@@ -43,6 +50,10 @@ namespace Ase_Boose_UnitTest.Commands
             Assert.AreEqual(expectedPoints.Length, 3, "Triangle should have exactly three points.");
         }
 
+        /// <summary>
+        /// Tests that the fill functionality works correctly when drawing a triangle
+        /// Verifies that the isFilling property is set correctly when fill is enabled
+        /// </summary>
         [Test]
         public void Execute_WithFilling_FillsTriangle()
         {
@@ -64,6 +75,10 @@ namespace Ase_Boose_UnitTest.Commands
             Assert.IsTrue(mockCanvas.Object.IsFilling, "Triangle should be filled.");
         }
 
+        /// <summary>
+        /// Tests that an error message is shown when invalid arguments are provided.
+        /// Verifies the error message content and that it's shown exactly once.
+        /// </summary>
         [Test]
         public void Execute_InvalidArguments_ShowsError()
         {

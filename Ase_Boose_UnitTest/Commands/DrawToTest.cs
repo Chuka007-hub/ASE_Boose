@@ -10,8 +10,15 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose_UnitTest.Commands
 {
+    /// <summary>
+    /// Tests for the DrawTo command functionality
+    /// </summary>
     public class DrawToTest
     {
+        /// <summary>
+        /// Tests that the DrawTo command shows an error message when invalid arguments are provided.
+        /// Verifies that the error message is displayed exactly once with the correct text
+        /// </summary>
         [Test]
         public void Execute_InvalidArguments_ShowsErrorMessage()
         {

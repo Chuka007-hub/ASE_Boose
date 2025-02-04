@@ -10,8 +10,15 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose_UnitTest.Commands
 {
+    /// <summary>
+    /// Tests for the FillColor command functionality
+    /// </summary>
     public class FillColorTest
     {
+        /// <summary>
+        /// Tests that an error message is shown when no argument is provided for the fill command.
+        /// Verifies the error message content and that it's shown exactly once.
+        /// </summary>
         [Test]
         public void Execute_MissingArgument_ShowsErrorMessage()
         {

@@ -6,9 +6,17 @@ using System.Drawing;
 
 namespace Ase_Boose_UnitTest.Commands
 {
+    /// <summary>
+    /// Tests that a circle is drawn correctly with a valid radius
+    /// Verifies the circle's area is approximately correct within a specified tolerance
+    /// </summary>
     [TestFixture]
     public class CircleTests
     {
+        /// <summary>
+        /// Tests that a circle is drawn correctly with a valid radius.
+        /// Verifies the circle's area is approximately correct within a specified tolerance.
+        /// </summary>
         [Test]
         public void Execute_WithValidRadius_DrawsCircle()
         {
@@ -56,6 +64,10 @@ namespace Ase_Boose_UnitTest.Commands
             Assert.IsTrue(Math.Abs(expectedArea - actualArea) <= tolerance, $"Area covered by the circle should be approximately {expectedArea} pixels with a tolerance of {tolerance}.");
         }
 
+        /// <summary>
+        /// Tests that an error message is shown when invalid arguments are provided
+        /// Verifies the error message content and that it's shown exactly once.
+        /// </summary>
         [Test]
         public void Execute_InvalidArguments_ShowErrorMessage()
         {

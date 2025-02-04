@@ -11,9 +11,16 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose_UnitTest.Commands
 {
+    /// <summary>
+    /// Tests for the DrawRectangle command functionality
+    /// </summary>
     [TestFixture]
     public class DrawRectangleTests
     {
+        /// <summary>
+        /// Tests that a rectangle is drawn correctly with valid dimensions.
+        /// Verifies the rectangle's width and height match the provided arguments.
+        /// </summary>
         [Test]
         public void Execute_WithValidDimensions_DrawsRectangle()
         {
@@ -41,6 +48,10 @@ namespace Ase_Boose_UnitTest.Commands
                 $"Rectangle should have width {expectedWidth} and height {expectedHeight}.");
         }
 
+        /// <summary>
+        /// Tests that the fill functionality works correctly when drawing a rectangle.
+        /// Verifies that the IsFilling property is set correctly when fill is enabled
+        /// </summary>
         [Test]
         public void Execute_WithFilling_FillsRectangle()
         {
@@ -62,6 +73,10 @@ namespace Ase_Boose_UnitTest.Commands
             Assert.IsTrue(mockCanvas.Object.IsFilling, "Rectangle should be filled.");
         }
 
+        /// <summary>
+        /// Tests that an error message is shown when invalid arguments are provided.
+        /// Verifies the error message content and that it's shown exactly once.
+        /// </summary>
         [Test]
         public void Execute_InvalidArguments_ShowsError()
         {

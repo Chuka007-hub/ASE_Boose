@@ -11,8 +11,15 @@ using System.Threading.Tasks;
 
 namespace Ase_Boose_UnitTest.Commands
 {
+    /// <summary>
+    /// Tests for the PenColor command functionality
+    /// </summary>
     public class PenColorTests
     {
+        /// <summary>
+        /// Tests that both pen and fill colors are updated correctly when a valid color is provided.
+        /// Verifies that both DrawingPen and FillColor properties are set to the specified color
+        /// </summary>
         [Test]
         public void Execute_ValidColor_ChangesPenAndFillColor()
         {
@@ -32,6 +39,10 @@ namespace Ase_Boose_UnitTest.Commands
             Assert.AreEqual(Color.Red, mockCanvas.Object.FillColor, "Fill color should be set to Red.");
         }
 
+        /// <summary>
+        /// Tests that an error message is shown when an invalid color name is provided.
+        /// Verifies the error message content and that it's shown exactly once.
+        /// </summary>
         [Test]
         public void Execute_InvalidColor_ShowsErrorMessage()
         {
@@ -56,6 +67,10 @@ namespace Ase_Boose_UnitTest.Commands
         }
 
 
+        /// <summary>
+        /// Tests that an error message is shown when no color argument is provided
+        /// Verifies the rror message content and that it's shown exactly once.
+        /// </summary>
         [Test]
         public void Execute_NoArguments_ShowsErrorMessage()
         {
