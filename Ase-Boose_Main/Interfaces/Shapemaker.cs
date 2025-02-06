@@ -72,9 +72,6 @@ namespace Ase_Boose.Interfaces
         {
             lock (_locker)
             {
-                // Create graphics object for drawing
-                using Graphics graphics = canvas.DrawingPictureBox.CreateGraphics();
-
                 // Retrieve the command in lowercase format
                 string command = parser.Command.ToLower();
 
@@ -86,7 +83,10 @@ namespace Ase_Boose.Interfaces
                 // Execute graphics commands like 'rectangle', 'circle', 'triangle'
                 else if (graphicsCommands.ContainsKey(command))
                 {
-                    graphicsCommands[command].Execute(graphics, parser.Arguments, canvas);
+                    using (Graphics graphics = canvas.PictureBox.CreateGraphics())
+                    {
+                        graphicsCommands[command].Execute(graphics, parser.Arguments, canvas);
+                    }
                 }
                 // Show error if the command is unrecognized
                 else
