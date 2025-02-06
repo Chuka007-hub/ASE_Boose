@@ -51,22 +51,31 @@ namespace Ase_Boose.Interfaces
                     default:
                         if (line.StartsWith("int "))
                         {
-                            // Handle variable declaration and assignment
                             string[] parts = line.Substring(4).Split('=');
                             string varName = parts[0].Trim();
-                            int value = int.Parse(parts[1].Trim());
-                            variables[varName] = value;
+                            if (parts.Length > 1)
+                            {
+                                int value = int.Parse(parts[1].Trim());
+                                variables[varName] = value;
+                            }
+                            else
+                            {
+                                variables[varName] = 0; // Initialize without value
+                            }
+                            currentLine++;
+                        }
+                        else if (line.Contains("="))
+                        {
+                            ProcessVariableAssignment(line, variables);
                             currentLine++;
                         }
                         else
                         {
-                            // Replace variables with their values in the command
                             foreach (var variable in variables)
                             {
                                 line = line.Replace(variable.Key, variable.Value.ToString());
                             }
 
-                            // Execute the command
                             if (IsRecognizedCommand(line))
                             {
                                 canvas.Invoke((MethodInvoker)delegate
@@ -170,23 +179,28 @@ namespace Ase_Boose.Interfaces
         /// <returns>The line number after the while loop ends.</returns>
         private int ExecuteWhileLoop(string[] lines, int startLine, Dictionary<string, int> variables)
         {
-            // Extract the condition from the 'while' statement
             string condition = lines[startLine].Substring(6).Trim();
-
-            // Find the line where the loop ends
             int endLoopLine = FindEndLoopLine(lines, startLine);
+            
+            // Extract variable name from condition (e.g., "height > 50" -> "height")
+            string variableName = condition.Split(new[] { '<', '>', '=', '!' })[0].Trim();
+            
+            // Ensure variable exists
+            if (!variables.ContainsKey(variableName))
+            {
+                ShowError($"Variable '{variableName}' used in while loop is not defined");
+                return endLoopLine + 1;
+            }
 
-            int currentLine = startLine + 1;
-
-            // Continue executing the loop as long as the condition evaluates to true
+            condition = SubstituteVariableValues(condition, variables);
             while (EvaluateCondition(condition, variables))
             {
+                int currentLine = startLine + 1;
                 while (currentLine < endLoopLine)
                 {
                     string loopLine = lines[currentLine].Trim();
                     loopLine = SubstituteVariableValues(loopLine, variables);
 
-                    // Check if the line is a recognized command or variable assignment
                     if (IsRecognizedCommand(loopLine))
                     {
                         canvas.Invoke((MethodInvoker)delegate
@@ -202,8 +216,6 @@ namespace Ase_Boose.Interfaces
                     currentLine++;
                 }
 
-                // Reset the current line to the start of the loop and re-check the condition
-                currentLine = startLine + 1;
                 condition = SubstituteVariableValues(condition, variables);
             }
 
@@ -268,35 +280,33 @@ namespace Ase_Boose.Interfaces
         /// <returns>The line number after the 'if' block has been executed.</returns>
         private int ExecuteIfStatement(string[] lines, int startLine, Dictionary<string, int> variables)
         {
-            // Extract the condition for the 'if' statement
             string condition = lines[startLine].Substring(3).Trim();
-
-            // Find the end line for the 'if' block
             int endIfLine = FindEndIfLine(lines, startLine);
-
-            // Evaluate the condition
+            
             if (EvaluateCondition(condition, variables))
             {
                 int currentLine = startLine + 1;
                 while (currentLine < endIfLine)
                 {
                     string ifLine = lines[currentLine].Trim();
-                    ifLine = SubstituteVariableValues(ifLine, variables);
+                    
+                    // Replace variables with their values
+                    foreach (var variable in variables)
+                    {
+                        ifLine = ifLine.Replace(variable.Key, variable.Value.ToString());
+                    }
 
-                    // Process recognized commands or variable assignments
                     if (IsRecognizedCommand(ifLine))
                     {
                         canvas.Invoke((MethodInvoker)delegate
                         {
                             CommandParser parser = new CommandParser(ifLine);
-                            canvas.shapemaker.ExecuteDrawing(parser);
+                            shapemaker.ExecuteDrawing(parser);
                         });
                     }
-
                     currentLine++;
                 }
             }
-
             return endIfLine + 1;
         }
 
