@@ -226,5 +226,11 @@ public Pen DrawingPen
             drawingCommands.Add(command);
             PictureBox.Invalidate();
         }
+
+        public void ClearDrawings()
+        {
+            drawingCommands.Clear();
+            PictureBox.Invalidate();
+        }
     }
 }
