@@ -9,14 +9,14 @@ namespace Ase_Boose.Interfaces
 {
     public class MultipleLineCommand
     {
-
-        private Canvas canvas;
+        private readonly Canvas canvas;
         private readonly Dictionary<string, int> variables = new();
-
+        private readonly Shapemaker shapemaker;
 
         public MultipleLineCommand(Canvas canvas)
         {
             this.canvas = canvas;
+            this.shapemaker = new Shapemaker(canvas);
         }
 
         /// <summary>
@@ -25,12 +25,9 @@ namespace Ase_Boose.Interfaces
         /// <param name="scriptContent">The script content containing commands to execute, separated by new lines.</param>
         public void ExecuteCommands(string scriptContent)
         {
-            // Split the script into lines, removing any empty entries
             string[] lines = scriptContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            var variables = new Dictionary<string, int>();
             int currentLine = 0;
 
-            // Process each line of the script
             while (currentLine < lines.Length)
             {
                 string line = lines[currentLine].Trim();
@@ -39,65 +36,51 @@ namespace Ase_Boose.Interfaces
                 switch (command)
                 {
                     case "while":
-                        // Execute while loop and update the current line based on the loop execution
                         currentLine = ExecuteWhileLoop(lines, currentLine, variables);
                         break;
 
                     case "if":
-                        // Execute if statement and update the current line based on the condition
                         currentLine = ExecuteIfStatement(lines, currentLine, variables);
                         break;
 
                     case "endif":
-                        // End of an if block, move to the next line
+                    case "endwhile":
                         currentLine++;
                         break;
 
                     default:
-                        if (IsVariableAssignment(line))
+                        if (line.StartsWith("int "))
                         {
-                            // Process variable assignment
-                            ProcessVariableAssignment(line, variables);
+                            // Handle variable declaration and assignment
+                            string[] parts = line.Substring(4).Split('=');
+                            string varName = parts[0].Trim();
+                            int value = int.Parse(parts[1].Trim());
+                            variables[varName] = value;
+                            currentLine++;
                         }
-                        else if (IsRecognizedCommand(line))
+                        else
                         {
-                            // Execute recognized commands
-                            ExecuteCommand(line, variables);
+                            // Replace variables with their values in the command
+                            foreach (var variable in variables)
+                            {
+                                line = line.Replace(variable.Key, variable.Value.ToString());
+                            }
+
+                            // Execute the command
+                            if (IsRecognizedCommand(line))
+                            {
+                                canvas.Invoke((MethodInvoker)delegate
+                                {
+                                    CommandParser parser = new CommandParser(line);
+                                    shapemaker.ExecuteDrawing(parser);
+                                });
+                            }
+                            currentLine++;
                         }
-                        currentLine++;
                         break;
                 }
             }
         }
-
-        /// <summary>
-        /// Executes a command line after substituting any variable values.
-        /// </summary>
-        /// <param name="line">The command line to execute.</param>
-        /// <param name="variables">A dictionary of variables used within the script.</param>
-        private void ExecuteCommand(string line, Dictionary<string, int> variables)
-        {
-            // Substitute variable values in the command line
-            line = SubstituteVariableValues(line, variables);
-
-            // Invoke drawing command on the UI thread
-            canvas.Invoke((MethodInvoker)delegate
-            {
-                CommandParser parser = new CommandParser(line);
-                canvas.shapemaker.ExecuteDrawing(parser);
-            });
-        }
-
-        /// <summary>
-        /// Determines if the line represents a variable assignment.
-        /// </summary>
-        /// <param name="line">The line to check.</param>
-        /// <returns>True if the line contains a variable assignment, otherwise false.</returns>
-        private bool IsVariableAssignment(string line)
-        {
-            return line.Contains("=");
-        }
-
 
         /// <summary>
         /// Shows an error message box with the specified message.
@@ -227,7 +210,6 @@ namespace Ase_Boose.Interfaces
             return endLoopLine + 1;
         }
 
-
         /// <summary>
         /// Evaluates an arithmetic expression using DataTable.Compute.
         /// </summary>
@@ -254,7 +236,6 @@ namespace Ase_Boose.Interfaces
                 return int.MinValue;
             }
         }
-
 
         /// <summary>
         /// Finds the line number where the 'endloop' statement is located for the while loop.
@@ -319,11 +300,6 @@ namespace Ase_Boose.Interfaces
             return endIfLine + 1;
         }
 
-
-
-
-
-
         /// <summary>
         /// Finds the line number where the 'endif' statement is located.
         /// </summary>
@@ -353,7 +329,6 @@ namespace Ase_Boose.Interfaces
         /// <param name="condition">The condition to evaluate as a string.</param>
         /// <param name="variables">A dictionary of variable names and their corresponding integer values.</param>
         /// <returns>True if the condition is met, otherwise false.</returns>
-
         private bool EvaluateCondition(string condition, Dictionary<string, int> variables)
         {
             string[] parts;
@@ -409,15 +384,12 @@ namespace Ase_Boose.Interfaces
             return false;
         }
 
-
-
         /// <summary>
         /// Checks if the provided line contains a recognized command.
         /// A recognized command is one of the predefined set such as "moveto", "drawto", etc.
         /// </summary>
         /// <param name="line">The line to check for a recognized command.</param>
         /// <returns>True if the command is recognized, otherwise false.</returns>
-
         private bool IsRecognizedCommand(string line)
         {
             string command = line.Split(' ')[0].ToLower();
@@ -427,8 +399,6 @@ namespace Ase_Boose.Interfaces
             return recognizedCommands.Contains(command);
         }
 
-
-
         /// <summary>
         /// Substitutes variable values in the given line with their corresponding values from the variables dictionary.
         /// The first token (command) is left unchanged, and all subsequent tokens are checked for variable substitution.
@@ -436,7 +406,6 @@ namespace Ase_Boose.Interfaces
         /// <param name="line">The line containing the command and variable placeholders.</param>
         /// <param name="variables">A dictionary of variables and their integer values to substitute into the line.</param>
         /// <returns>The line with variable values substituted where applicable.</returns>
-
         private string SubstituteVariableValues(string line, Dictionary<string, int> variables)
         {
             string[] tokens = line.Split(' ');
@@ -452,6 +421,14 @@ namespace Ase_Boose.Interfaces
             return string.Join(" ", tokens);
         }
 
-
+        /// <summary>
+        /// Determines if the line represents a variable assignment.
+        /// </summary>
+        /// <param name="line">The line to check.</param>
+        /// <returns>True if the line contains a variable assignment, otherwise false.</returns>
+        private bool IsVariableAssignment(string line)
+        {
+            return line.Contains("=");
+        }
     }
 }
