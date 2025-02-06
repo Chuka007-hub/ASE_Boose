@@ -72,23 +72,22 @@ namespace Ase_Boose.Interfaces
         {
             lock (_locker)
             {
-                // Retrieve the command in lowercase format
                 string command = parser.Command.ToLower();
 
-                // Execute basic commands like 'moveto', 'drawto', 'reset', 'clear', 'pen', 'fill'
                 if (basicCommands.ContainsKey(command))
                 {
                     basicCommands[command].Execute(canvas, parser.Arguments);
                 }
-                // Execute graphics commands like 'rectangle', 'circle', 'triangle'
                 else if (graphicsCommands.ContainsKey(command))
                 {
-                    using (Graphics graphics = canvas.PictureBox.CreateGraphics())
+                    canvas.AddDrawingCommand(g =>
                     {
-                        graphicsCommands[command].Execute(graphics, parser.Arguments, canvas);
-                    }
+                        using (Graphics graphics = canvas.PictureBox.CreateGraphics())
+                        {
+                            graphicsCommands[command].Execute(g, parser.Arguments, canvas);
+                        }
+                    });
                 }
-                // Show error if the command is unrecognized
                 else
                 {
                     MessageBox.Show($"Unrecognized command: {parser.Command}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

@@ -38,85 +38,105 @@ namespace Ase_Boose.Interfaces
             while (currentLine < lines.Length)
             {
                 string line = lines[currentLine].Trim();
-                string command = line.Split(' ')[0].ToLower();
-
-                switch (command)
+                
+                if (string.IsNullOrEmpty(line))
                 {
-                    case "while":
-                        currentLine = ExecuteWhileLoop(lines, currentLine, variables);
-                        break;
+                    currentLine++;
+                    continue;
+                }
 
-                    case "if":
-                        currentLine = ExecuteIfStatement(lines, currentLine, variables);
-                        break;
+                if (IsRecognizedCommand(line))
+                {
+                    string processedLine = SubstituteVariableValues(line, variables);
+                    canvas.Invoke((MethodInvoker)delegate
+                    {
+                        CommandParser parser = new CommandParser(processedLine);
+                        shapemaker.ExecuteDrawing(parser);
+                    });
+                    currentLine++;
+                }
+                else
+                {
+                    string command = line.Split(' ')[0].ToLower();
 
-                    case "endif":
-                    case "endwhile":
-                        currentLine++;
-                        break;
+                    switch (command)
+                    {
+                        case "while":
+                            currentLine = ExecuteWhileLoop(lines, currentLine, variables);
+                            break;
 
-                    case "array":
-                        HandleArrayDeclaration(line);
-                        currentLine++;
-                        break;
-                    case "poke":
-                    case "peek":
-                        HandleArrayOperation(line);
-                        currentLine++;
-                        break;
+                        case "if":
+                            currentLine = ExecuteIfStatement(lines, currentLine, variables);
+                            break;
 
-                    case "for":
-                        currentLine = ExecuteForLoop(lines, currentLine, variables);
-                        break;
+                        case "endif":
+                        case "endwhile":
+                            currentLine++;
+                            break;
 
-                    case "method":
-                        HandleMethodDefinition(lines, currentLine);
-                        currentLine = FindEndMethodLine(lines, currentLine) + 1;
-                        break;
-                    case "call":
-                        HandleMethodCall(line, variables);
-                        currentLine++;
-                        break;
+                        case "array":
+                            HandleArrayDeclaration(line);
+                            currentLine++;
+                            break;
+                        case "poke":
+                        case "peek":
+                            HandleArrayOperation(line);
+                            currentLine++;
+                            break;
 
-                    default:
-                        if (line.StartsWith("int "))
-                        {
-                            string[] parts = line.Substring(4).Split('=');
-                            string varName = parts[0].Trim();
-                            if (parts.Length > 1)
+                        case "for":
+                            currentLine = ExecuteForLoop(lines, currentLine, variables);
+                            break;
+
+                        case "method":
+                            HandleMethodDefinition(lines, currentLine);
+                            currentLine = FindEndMethodLine(lines, currentLine) + 1;
+                            break;
+                        case "call":
+                            HandleMethodCall(line, variables);
+                            currentLine++;
+                            break;
+
+                        default:
+                            if (line.StartsWith("int "))
                             {
-                                int value = int.Parse(parts[1].Trim());
-                                variables[varName] = value;
+                                string[] parts = line.Substring(4).Split('=');
+                                string varName = parts[0].Trim();
+                                if (parts.Length > 1)
+                                {
+                                    int value = int.Parse(parts[1].Trim());
+                                    variables[varName] = value;
+                                }
+                                else
+                                {
+                                    variables[varName] = 0; // Initialize without value
+                                }
+                                currentLine++;
+                            }
+                            else if (line.Contains("="))
+                            {
+                                ProcessVariableAssignment(line, variables);
+                                currentLine++;
                             }
                             else
                             {
-                                variables[varName] = 0; // Initialize without value
-                            }
-                            currentLine++;
-                        }
-                        else if (line.Contains("="))
-                        {
-                            ProcessVariableAssignment(line, variables);
-                            currentLine++;
-                        }
-                        else
-                        {
-                            foreach (var variable in variables)
-                            {
-                                line = line.Replace(variable.Key, variable.Value.ToString());
-                            }
-
-                            if (IsRecognizedCommand(line))
-                            {
-                                canvas.Invoke((MethodInvoker)delegate
+                                foreach (var variable in variables)
                                 {
-                                    CommandParser parser = new CommandParser(line);
-                                    shapemaker.ExecuteDrawing(parser);
-                                });
+                                    line = line.Replace(variable.Key, variable.Value.ToString());
+                                }
+
+                                if (IsRecognizedCommand(line))
+                                {
+                                    canvas.Invoke((MethodInvoker)delegate
+                                    {
+                                        CommandParser parser = new CommandParser(line);
+                                        shapemaker.ExecuteDrawing(parser);
+                                    });
+                                }
+                                currentLine++;
                             }
-                            currentLine++;
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
         }
