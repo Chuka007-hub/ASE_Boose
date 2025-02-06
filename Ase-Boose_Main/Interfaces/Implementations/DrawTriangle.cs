@@ -26,20 +26,23 @@ namespace Ase_Boose.Interfaces.Implementations
 
                 Point[] points =
                 {
-            new Point(x, y),
-            new Point(x + baseLength, y),
-            new Point(x + baseLength / 2, y - height)
-        };
+                    new Point(x, y),
+                    new Point(x + baseLength, y),
+                    new Point(x + baseLength / 2, y - height)
+                };
 
-                if (canvas.IsFilling)
+                canvas.AddDrawingCommand(g =>
                 {
-                    using var brush = new SolidBrush(canvas.FillColor);
-                    graphics.FillPolygon(brush, points);
-                }
-                else
-                {
-                    graphics.DrawPolygon(canvas.DrawingPen, points);
-                }
+                    if (canvas.IsFilling)
+                    {
+                        using var brush = new SolidBrush(canvas.FillColor);
+                        g.FillPolygon(brush, points);
+                    }
+                    else
+                    {
+                        g.DrawPolygon(canvas.DrawingPen, points);
+                    }
+                });
 
                 CommandUtils.ClearCommandTextBox(canvas);
             }

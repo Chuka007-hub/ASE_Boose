@@ -22,15 +22,18 @@ namespace Ase_Boose.Interfaces.Implementations
                 int x = canvas.CurrentPosition.X - radius;
                 int y = canvas.CurrentPosition.Y - radius;
 
-                if (canvas.IsFilling)
+                canvas.AddDrawingCommand(g =>
                 {
-                    using var brush = new SolidBrush(canvas.FillColor);
-                    graphics.FillEllipse(brush, x, y, 2 * radius, 2 * radius);
-                }
-                else
-                {
-                    graphics.DrawEllipse(canvas.DrawingPen, x, y, 2 * radius, 2 * radius);
-                }
+                    if (canvas.IsFilling)
+                    {
+                        using var brush = new SolidBrush(canvas.FillColor);
+                        g.FillEllipse(brush, x, y, 2 * radius, 2 * radius);
+                    }
+                    else
+                    {
+                        g.DrawEllipse(canvas.DrawingPen, x, y, 2 * radius, 2 * radius);
+                    }
+                });
 
                 CommandUtils.ClearCommandTextBox(canvas);
             }
