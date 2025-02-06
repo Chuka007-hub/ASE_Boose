@@ -11,6 +11,7 @@ namespace Ase_Boose.Interfaces
 {
     public class MultipleLineCommand
     {
+        private string[] lines;
 
         private Canvas canvas;
         private readonly Dictionary<string, double> variables = new();
@@ -31,7 +32,7 @@ namespace Ase_Boose.Interfaces
         /// <param name="scriptContent">The script content containing commands to execute, separated by new lines.</param>
         public void ExecuteCommands(string scriptContent)
         {
-            string[] lines = scriptContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            this.lines = scriptContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             int currentLine = 0;
 
             while (currentLine < lines.Length)
