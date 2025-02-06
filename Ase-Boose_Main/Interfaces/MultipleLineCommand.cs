@@ -4,14 +4,19 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
+using Ase_Boose.Interfaces.Implementations;
 
 namespace Ase_Boose.Interfaces
 {
     public class MultipleLineCommand
     {
-        private readonly Canvas canvas;
-        private readonly Dictionary<string, int> variables = new();
-        private readonly Shapemaker shapemaker;
+
+        private Canvas canvas;
+        private readonly Dictionary<string, double> variables = new();
+        private readonly ArrayCommand arrayHandler = new();
+        private Dictionary<string, Method> methods = new();
+
 
         public MultipleLineCommand(Canvas canvas)
         {
@@ -45,6 +50,29 @@ namespace Ase_Boose.Interfaces
 
                     case "endif":
                     case "endwhile":
+                        currentLine++;
+                        break;
+
+                    case "array":
+                        HandleArrayDeclaration(line);
+                        currentLine++;
+                        break;
+                    case "poke":
+                    case "peek":
+                        HandleArrayOperation(line);
+                        currentLine++;
+                        break;
+
+                    case "for":
+                        currentLine = ExecuteForLoop(lines, currentLine, variables);
+                        break;
+
+                    case "method":
+                        HandleMethodDefinition(lines, currentLine);
+                        currentLine = FindEndMethodLine(lines, currentLine) + 1;
+                        break;
+                    case "call":
+                        HandleMethodCall(line, variables);
                         currentLine++;
                         break;
 
@@ -115,58 +143,29 @@ namespace Ase_Boose.Interfaces
         /// </summary>
         /// <param name="line">The assignment line to process.</param>
         /// <param name="variables">A dictionary containing all defined variables.</param>
-        private void ProcessVariableAssignment(string line, Dictionary<string, int> variables)
+        private void ProcessVariableAssignment(string line, Dictionary<string, double> variables)
         {
             string[] parts = line.Split('=');
             if (parts.Length == 2)
             {
-                string variableName = parts[0].Trim();
-                string value = parts[1].Trim();
+                string varPart = parts[0].Trim();
+                string valuePart = parts[1].Trim();
 
-                if (value.EndsWith("++"))
+                string[] varDeclaration = varPart.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                string varName = varDeclaration[varDeclaration.Length - 1];
+
+                // Handle numeric expression evaluation
+                try
                 {
-                    // Handle increment operation
-                    value = value.TrimEnd('+');
-                    if (variables.TryGetValue(value, out int previousValue))
-                    {
-                        variables[variableName] = previousValue + 1;
-                    }
-                    else
-                    {
-                        ShowError($"Variable '{value}' not found.");
-                    }
+                    DataTable dt = new DataTable();
+                    var result = dt.Compute(SubstituteVariableValues(valuePart, variables), "");
+                    double value = Convert.ToDouble(result);
+                    variables[varName] = value;
                 }
-                else if (IsArithmeticExpression(value))
+                catch (Exception)
                 {
-                    // Evaluate arithmetic expression
-                    int result = EvaluateArithmeticOperation(value, variables);
-                    if (result != int.MinValue)
-                    {
-                        variables[variableName] = result;
-                    }
-                    else
-                    {
-                        ShowError($"Error evaluating arithmetic expression: {value}");
-                    }
+                    ShowError($"Invalid expression: {valuePart}");
                 }
-                else if (int.TryParse(value, out int numericValue))
-                {
-                    // Direct assignment of integer value
-                    variables[variableName] = numericValue;
-                }
-                else if (variables.TryGetValue(value, out int variableValue))
-                {
-                    // Assign value of another variable
-                    variables[variableName] = variableValue;
-                }
-                else
-                {
-                    ShowError($"Invalid assignment: {line}");
-                }
-            }
-            else
-            {
-                ShowError($"Invalid assignment: {line}");
             }
         }
 
@@ -177,7 +176,7 @@ namespace Ase_Boose.Interfaces
         /// <param name="startLine">The starting line of the loop.</param>
         /// <param name="variables">The dictionary of variables used in the script.</param>
         /// <returns>The line number after the while loop ends.</returns>
-        private int ExecuteWhileLoop(string[] lines, int startLine, Dictionary<string, int> variables)
+        private int ExecuteWhileLoop(string[] lines, int startLine, Dictionary<string, double> variables)
         {
             string condition = lines[startLine].Substring(6).Trim();
             int endLoopLine = FindEndLoopLine(lines, startLine);
@@ -278,7 +277,7 @@ namespace Ase_Boose.Interfaces
         /// <param name="startLine">The line number where the 'if' statement begins.</param>
         /// <param name="variables">The dictionary of variables used in the script.</param>
         /// <returns>The line number after the 'if' block has been executed.</returns>
-        private int ExecuteIfStatement(string[] lines, int startLine, Dictionary<string, int> variables)
+        private int ExecuteIfStatement(string[] lines, int startLine, Dictionary<string, double> variables)
         {
             string condition = lines[startLine].Substring(3).Trim();
             int endIfLine = FindEndIfLine(lines, startLine);
@@ -339,7 +338,8 @@ namespace Ase_Boose.Interfaces
         /// <param name="condition">The condition to evaluate as a string.</param>
         /// <param name="variables">A dictionary of variable names and their corresponding integer values.</param>
         /// <returns>True if the condition is met, otherwise false.</returns>
-        private bool EvaluateCondition(string condition, Dictionary<string, int> variables)
+
+        private bool EvaluateCondition(string condition, Dictionary<string, double> variables)
         {
             string[] parts;
             if (condition.Contains("!="))
@@ -356,9 +356,9 @@ namespace Ase_Boose.Interfaces
                 string variableName = parts[0].Trim();
                 string valuePart = parts[1].Trim();
 
-                if (variables.TryGetValue(variableName, out int variableValue))
+                if (variables.TryGetValue(variableName, out double variableValue))
                 {
-                    if (int.TryParse(valuePart, out int conditionValue))
+                    if (double.TryParse(valuePart, out double conditionValue))
                     {
                         if (condition.Contains("<"))
                         {
@@ -370,11 +370,11 @@ namespace Ase_Boose.Interfaces
                         }
                         else if (condition.Contains("="))
                         {
-                            return variableValue == conditionValue;
+                            return Math.Abs(variableValue - conditionValue) < 0.0001; // For floating point comparison
                         }
                         else if (condition.Contains("!="))
                         {
-                            return variableValue != conditionValue;
+                            return Math.Abs(variableValue - conditionValue) >= 0.0001;
                         }
                     }
                     else
@@ -416,29 +416,141 @@ namespace Ase_Boose.Interfaces
         /// <param name="line">The line containing the command and variable placeholders.</param>
         /// <param name="variables">A dictionary of variables and their integer values to substitute into the line.</param>
         /// <returns>The line with variable values substituted where applicable.</returns>
-        private string SubstituteVariableValues(string line, Dictionary<string, int> variables)
-        {
-            string[] tokens = line.Split(' ');
 
-            for (int i = 1; i < tokens.Length; i++) 
+        private string SubstituteVariableValues(string expression, Dictionary<string, double> variables)
+        {
+            foreach (var variable in variables)
             {
-                if (variables.ContainsKey(tokens[i])) 
+                expression = expression.Replace(variable.Key, variable.Value.ToString(CultureInfo.InvariantCulture));
+            }
+            return expression;
+        }
+
+        private void HandleArrayDeclaration(string line)
+        {
+            string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 4 && parts[0] == "array")
+            {
+                arrayHandler.Execute(canvas, new[] { parts[1], parts[2], parts[3] });
+            }
+        }
+
+        private void HandleArrayOperation(string line)
+        {
+            string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 5)
+            {
+                if (parts[0] == "poke")
                 {
-                    tokens[i] = variables[tokens[i]].ToString();
+                    string arrayName = parts[1];
+                    if (int.TryParse(parts[2], out int index) && double.TryParse(parts[4], out double value))
+                    {
+                        arrayHandler.Poke(arrayName, index, value);
+                    }
+                }
+                else if (parts[0] == "peek")
+                {
+                    string varName = parts[1];
+                    string arrayName = parts[3];
+                    if (int.TryParse(parts[4], out int index))
+                    {
+                        double value = arrayHandler.Peek(arrayName, index);
+                        variables[varName] = value;
+                    }
+                }
+            }
+        }
+
+        private int ExecuteForLoop(string[] lines, int startLine, Dictionary<string, double> variables)
+        {
+            foreach (var (lineNumber, line) in ForLoop.Execute(lines, startLine, variables))
+            {
+                if (IsRecognizedCommand(line))
+                {
+                    string processedLine = SubstituteVariableValues(line, variables);
+                    canvas.Invoke((MethodInvoker)delegate
+                    {
+                        CommandParser parser = new CommandParser(processedLine);
+                        canvas.shapemaker.ExecuteDrawing(parser);
+                    });
+                }
+                else if (IsVariableAssignment(line))
+                {
+                    ProcessVariableAssignment(line, variables);
+                }
+            }
+            
+            return ForLoop.FindEndForLine(lines, startLine) + 1;
+        }
+
+        private void HandleMethodDefinition(string[] lines, int startLine)
+        {
+            string line = lines[startLine];
+            string[] parts = line.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            
+            Method method = new Method
+            {
+                ReturnType = parts[1],
+                Name = parts[2],
+                Parameters = new List<(string type, string name)>(),
+                StartLine = startLine
+            };
+
+            // Parse parameters
+            for (int i = 3; i < parts.Length; i += 2)
+            {
+                method.Parameters.Add((parts[i], parts[i + 1]));
+            }
+
+            // Find end of method
+            for (int i = startLine + 1; i < lines.Length; i++)
+            {
+                if (lines[i].Trim().ToLower() == "end method")
+                {
+                    method.EndLine = i;
+                    break;
                 }
             }
 
-            return string.Join(" ", tokens);
+            methods[method.Name] = method;
         }
 
-        /// <summary>
-        /// Determines if the line represents a variable assignment.
-        /// </summary>
-        /// <param name="line">The line to check.</param>
-        /// <returns>True if the line contains a variable assignment, otherwise false.</returns>
-        private bool IsVariableAssignment(string line)
+        private void HandleMethodCall(string line, Dictionary<string, double> variables)
         {
-            return line.Contains("=");
+            string[] parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string methodName = parts[1];
+            
+            if (methods.TryGetValue(methodName, out Method method))
+            {
+                double[] arguments = new double[parts.Length - 2];
+                for (int i = 2; i < parts.Length; i++)
+                {
+                    if (variables.TryGetValue(parts[i], out double value))
+                    {
+                        arguments[i - 2] = value;
+                    }
+                    else
+                    {
+                        arguments[i - 2] = double.Parse(parts[i]);
+                    }
+                }
+
+                double result = method.Execute(lines, variables, arguments);
+                variables[methodName] = result;
+            }
         }
+
+        private int FindEndMethodLine(string[] lines, int startLine)
+        {
+            for (int i = startLine + 1; i < lines.Length; i++)
+            {
+                if (lines[i].Trim().ToLower() == "end method")
+                {
+                    return i;
+                }
+            }
+            return lines.Length - 1;
+        }
+
     }
 }

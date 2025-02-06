@@ -27,7 +27,7 @@ namespace Ase_Boose.Interfaces
             { "clear", new ClearScreen() },
             { "pen", new PenColor() },
             { "fill", new fillColor() },
-
+            { "write", new WriteText() }
         };
 
 
