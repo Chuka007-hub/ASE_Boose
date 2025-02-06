@@ -17,15 +17,7 @@ namespace Ase_Boose.Interfaces.Implementations
         {
             if (canvas == null) return;
 
-            canvas.PictureBox.Invoke((MethodInvoker)delegate
-            {
-                using (Graphics g = canvas.PictureBox.CreateGraphics())
-                {
-                    g.Clear(canvas.PictureBox.BackColor);
-                }
-                canvas.PictureBox.Invalidate();
-            });
-
+            canvas.ClearDrawings();
             canvas.CommandTextBox.Invoke((MethodInvoker)delegate
             {
                 canvas.CommandTextBox.Clear();

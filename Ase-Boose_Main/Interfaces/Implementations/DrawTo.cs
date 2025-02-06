@@ -18,11 +18,12 @@ namespace Ase_Boose.Interfaces.Implementations
         {
             if (arguments.Length == 2 && int.TryParse(arguments[0], out int x) && int.TryParse(arguments[1], out int y))
             {
+                Point start = canvas.CurrentPosition;
                 Point destination = new Point(x, y);
-                using (Graphics graphics = canvas.PictureBox.CreateGraphics())
-                {
-                    graphics.DrawLine(canvas.DrawingPen, canvas.CurrentPosition, destination);
-                }
+                
+                // Store the drawing command
+                canvas.AddDrawingCommand(g => g.DrawLine(canvas.DrawingPen, start, destination));
+                
                 canvas.CurrentPosition = destination;
             }
             else

@@ -24,15 +24,18 @@ namespace Ase_Boose.Interfaces.Implementations
                 int x = canvas.CurrentPosition.X;
                 int y = canvas.CurrentPosition.Y;
 
-                if (canvas.IsFilling)
+                canvas.AddDrawingCommand(g =>
                 {
-                    using var brush = new SolidBrush(canvas.FillColor);
-                    graphics.FillRectangle(brush, x, y, width, height);
-                }
-                else
-                {
-                    graphics.DrawRectangle(canvas.DrawingPen, x, y, width, height);
-                }
+                    if (canvas.IsFilling)
+                    {
+                        using var brush = new SolidBrush(canvas.FillColor);
+                        g.FillRectangle(brush, x, y, width, height);
+                    }
+                    else
+                    {
+                        g.DrawRectangle(canvas.DrawingPen, x, y, width, height);
+                    }
+                });
 
                 CommandUtils.ClearCommandTextBox(canvas);
             }

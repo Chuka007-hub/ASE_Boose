@@ -2,6 +2,7 @@ using Ase_Boose.Interfaces;
 using Ase_Boose.Interfaces.Implementations;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Ase_Boose
 {
@@ -13,8 +14,7 @@ namespace Ase_Boose
         private Color fillColor = Color.Black;
         public Shapemaker shapemaker;
         public MultipleLineCommand multiLineCommands;
-
-
+        private List<Action<Graphics>> drawingCommands = new List<Action<Graphics>>();
 
         public Canvas()
         {
@@ -73,6 +73,11 @@ namespace Ase_Boose
             int x = Position.X - point / 2;
             int y = Position.Y - point / 2;
             e.Graphics.FillEllipse(Brushes.Black, x, y, point, point);
+
+            foreach (var command in drawingCommands)
+            {
+                command(e.Graphics);
+            }
         }
 
         private async void button2_Click(object sender, EventArgs e)
@@ -214,6 +219,12 @@ public Pen DrawingPen
         {
             get { return isFill; }
             set { isFill = value; }
+        }
+
+        public void AddDrawingCommand(Action<Graphics> command)
+        {
+            drawingCommands.Add(command);
+            PictureBox.Invalidate();
         }
     }
 }
