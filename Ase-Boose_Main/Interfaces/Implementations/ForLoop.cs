@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Ase_Boose.Utils;
 
 namespace Ase_Boose.Interfaces.Implementations
 {
     public class ForLoop
     {
-        public static int Execute(string[] lines, int startLine, Dictionary<string, double> variables)
+        public static IEnumerable<(int lineNumber, string line)> Execute(string[] lines, int startLine, Dictionary<string, double> variables)
         {
             string line = lines[startLine];
             string[] parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -13,24 +14,30 @@ namespace Ase_Boose.Interfaces.Implementations
             if (parts.Length < 7) // for count = 1 to 10 step 2
             {
                 CommandUtils.ShowError("Invalid for loop syntax");
-                return startLine + 1;
+                yield break;
             }
 
             string varName = parts[1];
-            double start = double.Parse(parts[3]);
-            double end = double.Parse(parts[5]);
-            double step = parts.Length >= 8 ? double.Parse(parts[7]) : 1;
+            if (!double.TryParse(parts[3], out double start) || 
+                !double.TryParse(parts[5], out double end) || 
+                (parts.Length >= 8 && !double.TryParse(parts[7], out double step)))
+            {
+                CommandUtils.ShowError("Invalid numeric values in for loop");
+                yield break;
+            }
+
+            double stepValue = parts.Length >= 8 ? double.Parse(parts[7]) : 1;
 
             int endForLine = FindEndForLine(lines, startLine);
             if (endForLine == -1)
             {
                 CommandUtils.ShowError("Missing 'end for'");
-                return lines.Length;
+                yield break;
             }
 
             variables[varName] = start;
-            while ((step > 0 && variables[varName] <= end) || 
-                   (step < 0 && variables[varName] >= end))
+            while ((stepValue > 0 && variables[varName] <= end) || 
+                   (stepValue < 0 && variables[varName] >= end))
             {
                 for (int i = startLine + 1; i < endForLine; i++)
                 {
@@ -40,10 +47,8 @@ namespace Ase_Boose.Interfaces.Implementations
                         yield return (i, currentLine);
                     }
                 }
-                variables[varName] += step;
+                variables[varName] += stepValue;
             }
-
-            return endForLine + 1;
         }
 
         private static int FindEndForLine(string[] lines, int startLine)

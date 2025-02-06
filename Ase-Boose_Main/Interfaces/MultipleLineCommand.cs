@@ -16,6 +16,7 @@ namespace Ase_Boose.Interfaces
         private readonly Dictionary<string, double> variables = new();
         private readonly ArrayCommand arrayHandler = new();
         private Dictionary<string, Method> methods = new();
+        private readonly Shapemaker shapemaker;
 
 
         public MultipleLineCommand(Canvas canvas)
@@ -463,15 +464,18 @@ namespace Ase_Boose.Interfaces
 
         private int ExecuteForLoop(string[] lines, int startLine, Dictionary<string, double> variables)
         {
-            foreach (var (lineNumber, line) in ForLoop.Execute(lines, startLine, variables))
+            foreach (var result in ForLoop.Execute(lines, startLine, variables))
             {
+                int lineNumber = result.lineNumber;
+                string line = result.line;
+                
                 if (IsRecognizedCommand(line))
                 {
                     string processedLine = SubstituteVariableValues(line, variables);
                     canvas.Invoke((MethodInvoker)delegate
                     {
                         CommandParser parser = new CommandParser(processedLine);
-                        canvas.shapemaker.ExecuteDrawing(parser);
+                        shapemaker.ExecuteDrawing(parser);
                     });
                 }
                 else if (IsVariableAssignment(line))
@@ -480,7 +484,15 @@ namespace Ase_Boose.Interfaces
                 }
             }
             
-            return ForLoop.FindEndForLine(lines, startLine) + 1;
+            // Find the end of the for loop
+            for (int i = startLine + 1; i < lines.Length; i++)
+            {
+                if (lines[i].Trim().ToLower() == "end for")
+                {
+                    return i + 1;
+                }
+            }
+            return lines.Length;
         }
 
         private void HandleMethodDefinition(string[] lines, int startLine)
@@ -550,6 +562,11 @@ namespace Ase_Boose.Interfaces
                 }
             }
             return lines.Length - 1;
+        }
+
+        private bool IsVariableAssignment(string line)
+        {
+            return line.Contains("=") && !line.Contains("==");
         }
 
     }

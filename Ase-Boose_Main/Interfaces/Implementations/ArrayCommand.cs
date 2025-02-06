@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using Ase_Boose.Utils;
+
 namespace Ase_Boose.Interfaces.Implementations
 {
     public class ArrayCommand : IShapeCommand
