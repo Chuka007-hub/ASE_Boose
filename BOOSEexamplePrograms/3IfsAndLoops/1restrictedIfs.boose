@@ -2,9 +2,9 @@
 *change the value of width to see the circle change size
 int control = 50
 if control < 10
-	pen 255,0,0
+	pen 255 0 0
 	circle 20
 else
-	pen 0,255,0
+	pen 0 255 0
 	circle 100
-end if
+endif

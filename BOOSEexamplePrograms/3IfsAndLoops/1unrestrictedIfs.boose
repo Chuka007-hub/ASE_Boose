@@ -3,14 +3,14 @@
 int control = 50
 if control < 10
 	if control < 5
-		pen 255,0,0
+		pen 255 0 0
 	else
-		pen 0,0,255
-	end if
+		pen 0 0 255
+	endif
 	circle 20
-	rect 20,20
+	rectangle 20 20
 else
-	pen 0,255,0
+	pen 0 255 0
 	circle 100
-	rect 100,100
-end if
+	rectangle 100 100
+endif

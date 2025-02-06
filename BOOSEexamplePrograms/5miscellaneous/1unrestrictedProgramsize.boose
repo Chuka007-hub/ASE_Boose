@@ -9,5 +9,5 @@ circle 100
 circle 50
 circle 100
 circle 50
-rect 100,100
-rect 200,200
+rectangle 100 100
+rectangle 200 200
