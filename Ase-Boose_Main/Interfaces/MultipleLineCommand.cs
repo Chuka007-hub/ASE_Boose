@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
 using Ase_Boose.Interfaces.Implementations;
-
+using Ase_Boose.Utils;
 namespace Ase_Boose.Interfaces
 {
     public class MultipleLineCommand
@@ -65,12 +65,12 @@ namespace Ase_Boose.Interfaces
                             currentLine = ExecuteWhileLoop(lines, currentLine, variables);
                             break;
                         case "for":
-                            string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                            if (parts.Length >= 2)
+                            string[] forParts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                            if (forParts.Length >= 2)
                             {
-                                if (!variables.ContainsKey(parts[1]))
+                                if (!variables.ContainsKey(forParts[1]))
                                 {
-                                    variables[parts[1]] = 0; // Initialize the loop variable if it doesn't exist
+                                    variables[forParts[1]] = 0; // Initialize the loop variable if it doesn't exist
                                 }
                                 currentLine = ExecuteForLoop(lines, currentLine, variables);
                             }
