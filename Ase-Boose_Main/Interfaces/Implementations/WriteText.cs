@@ -9,14 +9,17 @@ namespace Ase_Boose.Interfaces.Implementations
             if (arguments.Length >= 1)
             {
                 string text = string.Join(" ", arguments);
-                using (Graphics graphics = canvas.PictureBox.CreateGraphics())
+                
+                canvas.AddDrawingCommand(g =>
                 {
                     using (Font font = new Font("Arial", 12))
                     {
-                        graphics.DrawString(text, font, new SolidBrush(canvas.DrawingPen.Color), 
+                        g.DrawString(text, font, new SolidBrush(canvas.DrawingPen.Color), 
                             canvas.CurrentPosition);
                     }
-                }
+                });
+
+                CommandUtils.ClearCommandTextBox(canvas);
             }
             else
             {
