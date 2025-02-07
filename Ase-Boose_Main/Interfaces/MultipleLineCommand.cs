@@ -447,32 +447,43 @@ namespace Ase_Boose.Interfaces
             string[] parts = expression.Split(' ');
             if (parts.Length <= 1) return expression;
 
-            // Keep the command (first word) unchanged
-            string command = parts[0];
-            string arguments = string.Join(" ", parts.Skip(1));
+            string command = parts[0].ToLower();
+            List<string> processedArgs = new List<string>();
 
-            // Handle arithmetic expressions
-            foreach (var variable in variables)
+            for (int i = 1; i < parts.Length; i++)
             {
-                arguments = arguments.Replace(variable.Key, variable.Value.ToString(CultureInfo.InvariantCulture));
-            }
-
-            try
-            {
-                // Replace mathematical expressions with their computed values
-                while (arguments.Contains('*') || arguments.Contains('/') || arguments.Contains('+') || arguments.Contains('-'))
+                string arg = parts[i];
+                
+                // Check if argument contains arithmetic
+                if (arg.Contains('*') || arg.Contains('+') || arg.Contains('-') || arg.Contains('/'))
                 {
-                    var dt = new DataTable();
-                    var result = dt.Compute(arguments, "");
-                    arguments = Convert.ToString(result, CultureInfo.InvariantCulture);
+                    foreach (var variable in variables)
+                    {
+                        arg = arg.Replace(variable.Key, variable.Value.ToString(CultureInfo.InvariantCulture));
+                    }
+                    
+                    try
+                    {
+                        var dt = new DataTable();
+                        var result = dt.Compute(arg, "");
+                        processedArgs.Add(Convert.ToString(result, CultureInfo.InvariantCulture));
+                    }
+                    catch
+                    {
+                        processedArgs.Add(arg);
+                    }
+                }
+                else if (variables.ContainsKey(arg))
+                {
+                    processedArgs.Add(variables[arg].ToString(CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    processedArgs.Add(arg);
                 }
             }
-            catch
-            {
-                // If expression evaluation fails, return the original substituted string
-            }
 
-            return $"{command} {arguments}";
+            return $"{command} {string.Join(" ", processedArgs)}";
         }
 
         private void HandleArrayDeclaration(string line)

@@ -30,33 +30,16 @@ namespace Ase_Boose.Interfaces.Implementations
         /// <param name="arguments">An array containing the color name or RGB values.</param>
         public void Execute(ICanvas canvas, string[] arguments)
         {
-            if (arguments.Length == 1)
+            Color newColor;
+            if (arguments.Length == 3)
             {
-                // Handle named color
-                string colorName = arguments[0].ToLower();
-                if (ColorMap.TryGetValue(colorName, out Color newColor))
-                {
-                    canvas.DrawingPen = new Pen(newColor);
-                    canvas.FillColor = newColor;
-                }
-                else
-                {
-                    CommandUtils.ShowError("Invalid pen color. Try using common color names or RGB values (e.g., pen 255 176 176).");
-                    return;
-                }
-            }
-            else if (arguments.Length == 3)
-            {
-                // Handle RGB values
                 if (int.TryParse(arguments[0], out int r) && 
                     int.TryParse(arguments[1], out int g) && 
                     int.TryParse(arguments[2], out int b))
                 {
                     if (r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255)
                     {
-                        Color newColor = Color.FromArgb(r, g, b);
-                        canvas.DrawingPen = new Pen(newColor);
-                        canvas.FillColor = newColor;
+                        newColor = Color.FromArgb(r, g, b);
                     }
                     else
                     {
@@ -72,9 +55,13 @@ namespace Ase_Boose.Interfaces.Implementations
             }
             else
             {
-                CommandUtils.ShowError("Invalid pen command. Use either a color name or RGB values (e.g., pen red or pen 255 176 176).");
+                CommandUtils.ShowError("Invalid pen command. Use RGB values (e.g., pen 255 0 0).");
                 return;
             }
+
+            // Create a new pen with width 1 for thinner lines
+            canvas.DrawingPen = new Pen(newColor, 1.0f);
+            canvas.FillColor = newColor;
         }
     }
 }

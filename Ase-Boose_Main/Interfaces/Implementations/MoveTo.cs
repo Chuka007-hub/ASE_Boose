@@ -23,8 +23,7 @@ namespace Ase_Boose.Interfaces.Implementations
             }
             else
             {
-                MessageBox.Show("Invalid arguments for 'moveto' command. Please provide valid coordinates.",
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CommandUtils.ShowError("Invalid arguments for 'moveto' command. Please provide valid coordinates.");
             }
         }
 
