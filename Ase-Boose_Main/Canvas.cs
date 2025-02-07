@@ -15,6 +15,7 @@ namespace Ase_Boose
         public Shapemaker shapemaker;
         public MultipleLineCommand multiLineCommands;
         private List<Action<Graphics>> drawingCommands = new List<Action<Graphics>>();
+        private readonly object drawingLock = new object();
 
         public Canvas()
         {
@@ -74,7 +75,13 @@ namespace Ase_Boose
             int y = Position.Y - point / 2;
             e.Graphics.FillEllipse(Brushes.Black, x, y, point, point);
 
-            foreach (var command in drawingCommands)
+            Action<Graphics>[] commandsCopy;
+            lock (drawingLock)
+            {
+                commandsCopy = drawingCommands.ToArray();
+            }
+
+            foreach (var command in commandsCopy)
             {
                 command(e.Graphics);
             }
@@ -223,13 +230,19 @@ public Pen DrawingPen
 
         public void AddDrawingCommand(Action<Graphics> command)
         {
-            drawingCommands.Add(command);
+            lock (drawingLock)
+            {
+                drawingCommands.Add(command);
+            }
             PictureBox.Invalidate();
         }
 
         public void ClearDrawings()
         {
-            drawingCommands.Clear();
+            lock (drawingLock)
+            {
+                drawingCommands.Clear();
+            }
             PictureBox.Invalidate();
         }
     }
