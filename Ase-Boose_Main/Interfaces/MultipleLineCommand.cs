@@ -64,16 +64,21 @@ namespace Ase_Boose.Interfaces
                         case "while":
                             currentLine = ExecuteWhileLoop(lines, currentLine, variables);
                             break;
-
+                        case "for":
+                            if (!variables.ContainsKey(parts[1]))
+                            {
+                                variables[parts[1]] = 0; // Initialize the loop variable if it doesn't exist
+                            }
+                            currentLine = ExecuteForLoop(lines, currentLine, variables);
+                            break;
                         case "if":
                             currentLine = ExecuteIfStatement(lines, currentLine, variables);
                             break;
-
                         case "endif":
                         case "endwhile":
+                        case "endloop":
                             currentLine++;
                             break;
-
                         case "array":
                             HandleArrayDeclaration(line);
                             currentLine++;
@@ -83,11 +88,6 @@ namespace Ase_Boose.Interfaces
                             HandleArrayOperation(line);
                             currentLine++;
                             break;
-
-                        case "for":
-                            currentLine = ExecuteForLoop(lines, currentLine, variables);
-                            break;
-
                         case "method":
                             HandleMethodDefinition(lines, currentLine);
                             currentLine = FindEndMethodLine(lines, currentLine) + 1;
@@ -96,7 +96,6 @@ namespace Ase_Boose.Interfaces
                             HandleMethodCall(line, variables);
                             currentLine++;
                             break;
-
                         default:
                             if (line.StartsWith("int "))
                             {
@@ -425,13 +424,18 @@ namespace Ase_Boose.Interfaces
         private bool IsRecognizedCommand(string line)
         {
             string command = line.Split(' ')[0].ToLower();
-
             var recognizedCommands = new HashSet<string> { 
                 "moveto", "drawto", "fill", "reset", "clear", 
                 "pen", "rectangle", "circle", "triangle", "write" 
             };
 
-            return recognizedCommands.Contains(command);
+            var nonGraphicsCommands = new HashSet<string> {
+                "int", "real", "string", "if", "endif", 
+                "while", "endwhile", "for", "endloop",
+                "array", "method", "end", "call"
+            };
+
+            return recognizedCommands.Contains(command) && !nonGraphicsCommands.Contains(command);
         }
 
         /// <summary>
@@ -521,37 +525,47 @@ namespace Ase_Boose.Interfaces
             }
         }
 
-        private int ExecuteForLoop(string[] lines, int startLine, Dictionary<string, double> variables)
+        private int ExecuteForLoop(string[] lines, int currentLine, Dictionary<string, double> variables)
         {
-            foreach (var result in ForLoop.Execute(lines, startLine, variables))
+            string line = lines[currentLine].Trim();
+            string[] parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            
+            if (parts.Length != 7 || parts[2] != "=" || parts[4] != "to" || parts[6] != "step")
+                return currentLine + 1;
+
+            string varName = parts[1];
+            if (double.TryParse(parts[3], out double start) &&
+                double.TryParse(parts[5], out double end) &&
+                double.TryParse(parts[7], out double step))
             {
-                int lineNumber = result.lineNumber;
-                string line = result.line;
-                
-                if (IsRecognizedCommand(line))
+                variables[varName] = start;
+                int loopStart = currentLine + 1;
+
+                while ((step > 0 && variables[varName] <= end) || 
+                       (step < 0 && variables[varName] >= end))
                 {
-                    string processedLine = SubstituteVariableValues(line, variables);
-                    canvas.Invoke((MethodInvoker)delegate
+                    int executeLine = loopStart;
+                    while (executeLine < lines.Length && !lines[executeLine].Trim().ToLower().Equals("endloop"))
                     {
-                        CommandParser parser = new CommandParser(processedLine);
-                        shapemaker.ExecuteDrawing(parser);
-                    });
+                        string processedLine = SubstituteVariableValues(lines[executeLine].Trim(), variables);
+                        canvas.Invoke((MethodInvoker)delegate
+                        {
+                            CommandParser parser = new CommandParser(processedLine);
+                            shapemaker.ExecuteDrawing(parser);
+                        });
+                        executeLine++;
+                    }
+                    variables[varName] += step;
                 }
-                else if (IsVariableAssignment(line))
+
+                // Find the endloop
+                while (currentLine < lines.Length && !lines[currentLine].Trim().ToLower().Equals("endloop"))
                 {
-                    ProcessVariableAssignment(line, variables);
+                    currentLine++;
                 }
             }
             
-            // Find the end of the for loop
-            for (int i = startLine + 1; i < lines.Length; i++)
-            {
-                if (lines[i].Trim().ToLower() == "end for")
-                {
-                    return i + 1;
-                }
-            }
-            return lines.Length;
+            return currentLine + 1;
         }
 
         private void HandleMethodDefinition(string[] lines, int startLine)
