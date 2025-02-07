@@ -426,7 +426,10 @@ namespace Ase_Boose.Interfaces
         {
             string command = line.Split(' ')[0].ToLower();
 
-            var recognizedCommands = new HashSet<string> { "moveto", "drawto", "fill", "reset", "clear", "pen", "rectangle", "circle", "triangle" };
+            var recognizedCommands = new HashSet<string> { 
+                "moveto", "drawto", "fill", "reset", "clear", 
+                "pen", "rectangle", "circle", "triangle", "write" 
+            };
 
             return recognizedCommands.Contains(command);
         }
@@ -441,11 +444,20 @@ namespace Ase_Boose.Interfaces
 
         private string SubstituteVariableValues(string expression, Dictionary<string, double> variables)
         {
+            string[] parts = expression.Split(' ');
+            if (parts.Length <= 1) return expression;
+
+            // Keep the command (first word) unchanged
+            string command = parts[0];
+            string arguments = string.Join(" ", parts.Skip(1));
+
+            // Only substitute variables in the arguments portion
             foreach (var variable in variables)
             {
-                expression = expression.Replace(variable.Key, variable.Value.ToString(CultureInfo.InvariantCulture));
+                arguments = arguments.Replace(variable.Key, variable.Value.ToString(CultureInfo.InvariantCulture));
             }
-            return expression;
+
+            return $"{command} {arguments}";
         }
 
         private void HandleArrayDeclaration(string line)

@@ -26,8 +26,7 @@ namespace Ase_Boose.Interfaces
             { "reset", new Reset() },
             { "clear", new ClearScreen() },
             { "pen", new PenColor() },
-            { "fill", new fillColor() },
-            { "write", new WriteText() }
+            { "fill", new fillColor() }
         };
 
 
@@ -35,7 +34,8 @@ namespace Ase_Boose.Interfaces
         {
             { "rectangle", new DrawRectangle() },
             { "circle", new DrawCircle() },
-            { "triangle", new DrawTriangle() }
+            { "triangle", new DrawTriangle() },
+            { "write", new WriteText() }
         };
 
 

@@ -1,23 +1,26 @@
 using Ase_Boose.Utils;
+using System.Drawing;
 
 namespace Ase_Boose.Interfaces.Implementations
 {
-    public class WriteText : IShapeCommand
+    public class WriteText : IGraphicsCommand
     {
-        public void Execute(ICanvas canvas, string[] arguments)
+        public void Execute(Graphics graphics, string[] arguments, ICanvas canvas)
         {
             if (arguments.Length >= 1)
             {
                 string text = string.Join(" ", arguments);
                 
-                canvas.AddDrawingCommand(g =>
+                if (canvas.IsFilling)
                 {
-                    using (Font font = new Font("Arial", 12))
-                    {
-                        g.DrawString(text, font, new SolidBrush(canvas.DrawingPen.Color), 
-                            canvas.CurrentPosition);
-                    }
-                });
+                    using var brush = new SolidBrush(canvas.DrawingPen.Color);
+                    graphics.DrawString(text, new Font("Arial", 12), brush, canvas.CurrentPosition);
+                }
+                else
+                {
+                    graphics.DrawString(text, new Font("Arial", 12), new SolidBrush(canvas.DrawingPen.Color), 
+                        canvas.CurrentPosition);
+                }
 
                 CommandUtils.ClearCommandTextBox(canvas);
             }
