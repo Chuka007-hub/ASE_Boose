@@ -432,13 +432,20 @@ namespace Ase_Boose.Interfaces
         /// <returns>True if the command is recognized, otherwise false.</returns>
         private bool IsRecognizedCommand(string line)
         {
+            if (string.IsNullOrWhiteSpace(line)) return false;
+            
             string command = line.Split(' ')[0].ToLower();
             var recognizedCommands = new HashSet<string> { 
                 "moveto", "drawto", "fill", "reset", "clear", 
                 "pen", "rectangle", "circle", "triangle", "write" 
             };
 
-            return recognizedCommands.Contains(command);
+            var controlCommands = new HashSet<string> {
+                "if", "endif", "while", "endwhile", "for", "endloop",
+                "array", "method", "end", "call"
+            };
+
+            return recognizedCommands.Contains(command) && !controlCommands.Contains(command);
         }
 
         /// <summary>
@@ -533,12 +540,6 @@ namespace Ase_Boose.Interfaces
             string line = lines[currentLine].Trim();
             string[] parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             
-            if (parts.Length < 8)  // for count = 1 to 20 step 2
-            {
-                CommandUtils.ShowError("Invalid for loop syntax");
-                return currentLine + 1;
-            }
-
             string varName = parts[1];
             if (double.TryParse(parts[3], out double start) &&
                 double.TryParse(parts[5], out double end) &&
@@ -553,14 +554,14 @@ namespace Ase_Boose.Interfaces
                     int executeLine = loopStart;
                     while (executeLine < lines.Length && !lines[executeLine].Trim().ToLower().Equals("endloop"))
                     {
-                        if (!string.IsNullOrWhiteSpace(lines[executeLine]))
+                        string loopLine = lines[executeLine].Trim();
+                        if (!string.IsNullOrWhiteSpace(loopLine))
                         {
-                            string processedLine = SubstituteVariableValues(lines[executeLine].Trim(), variables);
+                            string processedLine = SubstituteVariableValues(loopLine, variables);
                             canvas.Invoke((MethodInvoker)delegate
                             {
                                 CommandParser parser = new CommandParser(processedLine);
                                 shapemaker.ExecuteDrawing(parser);
-                                canvas.PictureBox.Refresh();  // Force refresh after each command
                             });
                         }
                         executeLine++;
