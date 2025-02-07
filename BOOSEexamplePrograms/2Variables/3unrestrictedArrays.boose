@@ -9,10 +9,10 @@ circle x
 array real prices 10
 poke prices 5 = 99.99
 peek y = prices 5
-pen 0,255,0
+pen 0 255 0
 write "£"+y
 array real logs 10
 poke logs 5 = 100.001
 peek z = logs 5
-moveto 0,25
+moveto 0 25
 write z

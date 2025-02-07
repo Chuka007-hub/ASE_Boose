@@ -46,31 +46,7 @@ namespace Ase_Boose.Interfaces
         /// <exception cref="ArgumentNullException">Thrown when the parser is null.</exception>
         public void ExecuteDrawing(CommandParser parser)
         {
-            if (parser == null)
-            {
-                throw new ArgumentNullException(nameof(parser));
-            }
-
-            // Check if invoking on the UI thread is required
-            if (canvas.InvokeRequired)
-            {
-                // Invoke the drawing execution on the UI thread
-                canvas.Invoke(new Action(() => ExecuteDrawingInternal(parser)));
-            }
-            else
-            {
-                // Execute drawing directly if already on the UI thread
-                ExecuteDrawingInternal(parser);
-            }
-        }
-
-        /// <summary>
-        /// Executes the drawing commands internally by checking the type of command and invoking the respective drawing logic.
-        /// </summary>
-        /// <param name="parser">The command parser containing the command and its arguments.</param>
-        private void ExecuteDrawingInternal(CommandParser parser)
-        {
-            lock (_locker)
+            if (parser != null)
             {
                 string command = parser.Command.ToLower();
 
@@ -82,10 +58,7 @@ namespace Ase_Boose.Interfaces
                 {
                     canvas.AddDrawingCommand(g =>
                     {
-                        using (Graphics graphics = canvas.PictureBox.CreateGraphics())
-                        {
-                            graphicsCommands[command].Execute(g, parser.Arguments, canvas);
-                        }
+                        graphicsCommands[command].Execute(g, parser.Arguments, canvas);
                     });
                 }
                 else
