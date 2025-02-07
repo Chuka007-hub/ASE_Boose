@@ -65,11 +65,20 @@ namespace Ase_Boose.Interfaces
                             currentLine = ExecuteWhileLoop(lines, currentLine, variables);
                             break;
                         case "for":
-                            if (!variables.ContainsKey(parts[1]))
+                            string[] parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                            if (parts.Length >= 2)
                             {
-                                variables[parts[1]] = 0; // Initialize the loop variable if it doesn't exist
+                                if (!variables.ContainsKey(parts[1]))
+                                {
+                                    variables[parts[1]] = 0; // Initialize the loop variable if it doesn't exist
+                                }
+                                currentLine = ExecuteForLoop(lines, currentLine, variables);
                             }
-                            currentLine = ExecuteForLoop(lines, currentLine, variables);
+                            else
+                            {
+                                CommandUtils.ShowError("Invalid for loop syntax");
+                                currentLine++;
+                            }
                             break;
                         case "if":
                             currentLine = ExecuteIfStatement(lines, currentLine, variables);
