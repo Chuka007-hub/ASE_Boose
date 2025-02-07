@@ -438,13 +438,7 @@ namespace Ase_Boose.Interfaces
                 "pen", "rectangle", "circle", "triangle", "write" 
             };
 
-            var nonGraphicsCommands = new HashSet<string> {
-                "int", "real", "string", "if", "endif", 
-                "while", "endwhile", "for", "endloop",
-                "array", "method", "end", "call"
-            };
-
-            return recognizedCommands.Contains(command) && !nonGraphicsCommands.Contains(command);
+            return recognizedCommands.Contains(command);
         }
 
         /// <summary>
@@ -539,8 +533,11 @@ namespace Ase_Boose.Interfaces
             string line = lines[currentLine].Trim();
             string[] parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             
-            if (parts.Length != 7 || parts[2] != "=" || parts[4] != "to" || parts[6] != "step")
+            if (parts.Length < 8)  // for count = 1 to 20 step 2
+            {
+                CommandUtils.ShowError("Invalid for loop syntax");
                 return currentLine + 1;
+            }
 
             string varName = parts[1];
             if (double.TryParse(parts[3], out double start) &&
@@ -556,12 +553,16 @@ namespace Ase_Boose.Interfaces
                     int executeLine = loopStart;
                     while (executeLine < lines.Length && !lines[executeLine].Trim().ToLower().Equals("endloop"))
                     {
-                        string processedLine = SubstituteVariableValues(lines[executeLine].Trim(), variables);
-                        canvas.Invoke((MethodInvoker)delegate
+                        if (!string.IsNullOrWhiteSpace(lines[executeLine]))
                         {
-                            CommandParser parser = new CommandParser(processedLine);
-                            shapemaker.ExecuteDrawing(parser);
-                        });
+                            string processedLine = SubstituteVariableValues(lines[executeLine].Trim(), variables);
+                            canvas.Invoke((MethodInvoker)delegate
+                            {
+                                CommandParser parser = new CommandParser(processedLine);
+                                shapemaker.ExecuteDrawing(parser);
+                                canvas.PictureBox.Refresh();  // Force refresh after each command
+                            });
+                        }
                         executeLine++;
                     }
                     variables[varName] += step;
