@@ -18,22 +18,24 @@ namespace Ase_Boose.Interfaces.Implementations
         public void Execute(Graphics graphics, string[] arguments, ICanvas canvas)
         {
             if (arguments.Length == 2 &&
-                int.TryParse(arguments[0], out int width) &&
-                int.TryParse(arguments[1], out int height))
+                double.TryParse(arguments[0], out double width) &&
+                double.TryParse(arguments[1], out double height))
             {
                 int x = canvas.CurrentPosition.X;
                 int y = canvas.CurrentPosition.Y;
+                int intWidth = (int)Math.Round(width);
+                int intHeight = (int)Math.Round(height);
 
                 canvas.AddDrawingCommand(g =>
                 {
                     if (canvas.IsFilling)
                     {
                         using var brush = new SolidBrush(canvas.FillColor);
-                        g.FillRectangle(brush, x, y, width, height);
+                        g.FillRectangle(brush, x, y, intWidth, intHeight);
                     }
                     else
                     {
-                        g.DrawRectangle(canvas.DrawingPen, x, y, width, height);
+                        g.DrawRectangle(canvas.DrawingPen, x, y, intWidth, intHeight);
                     }
                 });
 

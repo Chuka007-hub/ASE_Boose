@@ -15,9 +15,11 @@ namespace Ase_Boose.Interfaces.Implementations
         /// <param name="arguments">An array containing the x and y coordinates as strings.</param>
         public void Execute(ICanvas canvas, string[] arguments)
         {
-            if (arguments.Length == 2 && int.TryParse(arguments[0], out int x) && int.TryParse(arguments[1], out int y))
+            if (arguments.Length == 2 && 
+                double.TryParse(arguments[0], out double x) && 
+                double.TryParse(arguments[1], out double y))
             {
-                canvas.CurrentPosition = new Point(x, y);
+                canvas.CurrentPosition = new Point((int)Math.Round(x), (int)Math.Round(y));
             }
             else
             {

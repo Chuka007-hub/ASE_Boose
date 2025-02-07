@@ -16,10 +16,12 @@ namespace Ase_Boose.Interfaces.Implementations
         /// <param name="arguments">An array of arguments containing the destination X and Y coordinates.</param>
         public void Execute(ICanvas canvas, string[] arguments)
         {
-            if (arguments.Length == 2 && int.TryParse(arguments[0], out int x) && int.TryParse(arguments[1], out int y))
+            if (arguments.Length == 2 && 
+                double.TryParse(arguments[0], out double x) && 
+                double.TryParse(arguments[1], out double y))
             {
                 Point start = canvas.CurrentPosition;
-                Point destination = new Point(x, y);
+                Point destination = new Point((int)Math.Round(x), (int)Math.Round(y));
                 
                 // Store the drawing command
                 canvas.AddDrawingCommand(g => g.DrawLine(canvas.DrawingPen, start, destination));

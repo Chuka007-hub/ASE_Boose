@@ -17,21 +17,22 @@ namespace Ase_Boose.Interfaces.Implementations
         /// <param name="canvas">The canvas on which the circle will be drawn.</param>
         public void Execute(Graphics graphics, string[] arguments, ICanvas canvas)
         {
-            if (arguments.Length == 1 && int.TryParse(arguments[0], out int radius))
+            if (arguments.Length == 1 && double.TryParse(arguments[0], out double radius))
             {
-                int x = canvas.CurrentPosition.X - radius;
-                int y = canvas.CurrentPosition.Y - radius;
+                int intRadius = (int)Math.Round(radius);
+                int x = canvas.CurrentPosition.X - intRadius;
+                int y = canvas.CurrentPosition.Y - intRadius;
 
                 canvas.AddDrawingCommand(g =>
                 {
                     if (canvas.IsFilling)
                     {
                         using var brush = new SolidBrush(canvas.FillColor);
-                        g.FillEllipse(brush, x, y, 2 * radius, 2 * radius);
+                        g.FillEllipse(brush, x, y, 2 * intRadius, 2 * intRadius);
                     }
                     else
                     {
-                        g.DrawEllipse(canvas.DrawingPen, x, y, 2 * radius, 2 * radius);
+                        g.DrawEllipse(canvas.DrawingPen, x, y, 2 * intRadius, 2 * intRadius);
                     }
                 });
 

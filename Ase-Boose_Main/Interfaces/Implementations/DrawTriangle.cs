@@ -18,17 +18,19 @@ namespace Ase_Boose.Interfaces.Implementations
         public void Execute(Graphics graphics, string[] arguments, ICanvas canvas)
         {
             if (arguments.Length == 2 &&
-                int.TryParse(arguments[0], out int baseLength) &&
-                int.TryParse(arguments[1], out int height))
+                double.TryParse(arguments[0], out double baseLength) &&
+                double.TryParse(arguments[1], out double height))
             {
                 int x = canvas.CurrentPosition.X;
                 int y = canvas.CurrentPosition.Y;
+                int intBase = (int)Math.Round(baseLength);
+                int intHeight = (int)Math.Round(height);
 
                 Point[] points =
                 {
                     new Point(x, y),
-                    new Point(x + baseLength, y),
-                    new Point(x + baseLength / 2, y - height)
+                    new Point(x + intBase, y),
+                    new Point(x + intBase / 2, y - intHeight)
                 };
 
                 canvas.AddDrawingCommand(g =>
