@@ -106,7 +106,7 @@ namespace Ase_Boose
                          "2. DrawTo x y  - Draws a line to (x, y).\n" +
                          "3. Reset       - Resets the drawing position.\n" +
                          "4. Clear       - Clears the canvas.\n" +
-                         "5. Pen color   - Changes pen color (e.g., Pen Red).\n" +
+                         "5. Pen color   - Changes pen color (e.g., Pen Red or Pen 255 176 176).\n" +
                          "6. Fill on/off - Enables/disables filling (Fill On/Off).\n" +
                          "7. Rectangle width height - Draws a rectangle.\n" +
                          "8. Circle radius - Draws a circle.\n" +
