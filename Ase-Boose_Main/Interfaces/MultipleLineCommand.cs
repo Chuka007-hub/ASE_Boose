@@ -451,10 +451,25 @@ namespace Ase_Boose.Interfaces
             string command = parts[0];
             string arguments = string.Join(" ", parts.Skip(1));
 
-            // Only substitute variables in the arguments portion
+            // Handle arithmetic expressions
             foreach (var variable in variables)
             {
                 arguments = arguments.Replace(variable.Key, variable.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            try
+            {
+                // Replace mathematical expressions with their computed values
+                while (arguments.Contains('*') || arguments.Contains('/') || arguments.Contains('+') || arguments.Contains('-'))
+                {
+                    var dt = new DataTable();
+                    var result = dt.Compute(arguments, "");
+                    arguments = Convert.ToString(result, CultureInfo.InvariantCulture);
+                }
+            }
+            catch
+            {
+                // If expression evaluation fails, return the original substituted string
             }
 
             return $"{command} {arguments}";
